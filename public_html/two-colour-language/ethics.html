@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<!--
+	Consent and ethics confirmation screen
+-->
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="robots" content="noindex, nofollow">
+	<title>Two Colour Language</title>
+	<link href="study/css/normalize.css" rel="stylesheet">
+	<link href="study/css/global.css" rel="stylesheet">
+	<style>
+		#briefingMain {
+			min-width: 280px;
+			width: 90%;
+			position: relative;
+			transform: none;
+			margin: 0 auto;
+			top: 0;
+			left: 0;
+		}
+
+		#briefingMain p {
+			padding-left: 5%;
+			padding-right: 5%;
+			text-align: justify;
+			margin: 2em;
+		}
+
+		#briefingMain ul {
+			padding-left: 10%;
+			text-align: justify;
+			margin: 2em;
+		}
+
+		#briefingMain ul li {
+			padding-bottom: 1em;
+		}
+
+		em {
+			font-weight: bold;
+			color: red;
+		}
+		
+		#consents input[type=checkbox] {
+			display: inline;
+			margin: 0.5em;
+		}
+		
+		#consents label {
+			display: inline-block;
+			padding-left: 5%;
+			padding-right: 5%;
+			text-align: justify;
+			margin: 0.8em 2em;
+		}
+	</style>
+</head>
+<body>
+	<main id="briefingMain">
+		<section id="briefing">
+			<h1>Briefing</h1>
+			<p>The study is being conducted by Vera Kempe and Nikolay Panayotov, has received ethical approval by the Research Ethics Committee of Abertay University Dundee, Scotland, and complies with the data protection measures specified by GDPR.
+			</p><p>It will involve one session and will typically last around 15 to 30 minutes. We ask you to complete the task in one sitting.
+			</p><p>Your participation in this study is voluntary.
+			</p><p>There are no known risks for you in this study.
+			</p><p>You may decide to stop taking part at any time during the study without explanation and without penalty. To do so, simply close your browser at any point. If you do, your data will be destroyed, and will not be included in any analyses or publications. 
+			</p><p>Any personally identifying information related to this study (e.g. your Prolific ID if applicable) will be kept separately from your responses with an anonymised identifier . Your responses to this study will only be associated with an anonymised identifier. As your data is kept anonymous, we will not be able to remove it after completion of the study. We will not analyse individual data, only the group data. All of the data associated with this study will be stored on password-protected servers to which only the researchers will have access. Your anonymised data will be uploaded to an open, online repository after the completion of testing. However, we will not share your personally-identifiable data on any open repositories.
+			</p><p>Researchers are obliged to retain research data for up to 10 years’ post-publication, however your anonymised research data may be retained indefinitely (e.g., so that researchers engage in open practice allowing other researchers to access their data to confirm the conclusions from published work). Since your data is stored in an anonymous format, and we do not store your personally identifying information with a recording of your consent to take part, we will be unable to remove your data on completion of the experiment.
+			</p><p>If you are interested in the outcome of the study, please email <a href="mailto:language.enquiries@abertay.ac.uk">language.enquiries@abertay.ac.uk</a>.
+			</p>
+			<div id="consents">
+				<p>Please tick the boxes below to provide your consent to take part in our study, and allow for the collection and analysis of your data: 
+				</p>
+				<label><input id="chb1" type="checkbox">I consent to take part in this study conducted by Vera Kempe and Nikolay Panayotov who intend to use my data for research that examines how people learn and perform in online environments.
+				</label>
+				<label><input id="chb2" type="checkbox">I consent for this website to use temporary cookies for strictly essential purposes that are not used for advertisement or other purposes unrelated to the study.
+				</label>		
+			</div>
+			<button id="continueButton" onclick="nextButtonPressed();">Next</button>
+		</section>
+	</main>
+	<script>
+		function nextButtonPressed() {
+			var chb1 = document.getElementById("chb1");
+			var chb2 = document.getElementById("chb2");
+			
+			if (chb1.checked && chb2.checked) {
+				window.location = 'study/' + window.location.search;
+			} else {
+				window.location = 'rejected_consent.html' + window.location.search;
+			}
+		}
+	</script>
+</body>
+</html>

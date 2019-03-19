@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!-- 
+	Start of Experiment
+	Author: Nikolay Panayotov
+-->
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="robots" content="noindex, nofollow">
+	<title>Two Colour Language</title>
+	<!-- Styling -->
+	<link href="css/normalize.css" rel="stylesheet">
+	<link href="css/global.css" rel="stylesheet">
+</head>
+<body>
+	<section id="briefing">
+		<h1>Round complete!</h1>
+		<div id="progressBeforeTask">
+			<img id="starOne" src="images/grey_star.png">
+			<img id="starTwo" src="images/grey_star.png">
+		</div>
+		<p>You have <span id="progressReport"></span> of 2 stars. You will continue the training until you have two.</p>
+		<p>In the next round of training you will try to remember the words for the objects one by one.</p>
+		<p>You need to input the colours of each word with the buttons on the screen.</p>
+		<p>You get a point if you are right. Get enough points to earn a star.</p>
+		<p>Pay attention to the screen while pressing the buttons or you might miss seeing your input.</p>
+		<p>This task is a bit more difficult, but just try your best.</p>
+		<button id="continueButton" onclick="nextButtonPressed();">CONTINUE</button>
+	</section>
+	<!-- Add JQuery Support -->
+	<script src="javascript/jquery-3.1.1.js"></script>
+	<script>
+		function nextButtonPressed() {
+			$.ajax('php/next_item.php').done(function(data) {
+				window.location.reload();
+			});	
+		}
+		
+		function showProgress() {
+			$.get("php/get_progress.php" , function(json) {
+				//console.log(json);
+				var data = JSON.parse(json);
+				
+				document.getElementById('progressReport').innerHTML = data.training_score;
+				
+				if (data.training_score > 0) {
+					document.getElementById('starOne').src = "images/golden_star.png";
+				}
+				if (data.training_score > 1) {
+					document.getElementById('starTwo').src = "images/golden_star.png";
+				}
+			});
+		}
+		
+		window.onload = showProgress;
+	</script>
+</body>
+</html>

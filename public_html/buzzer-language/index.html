@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta property="og:title"         content="The Binary Buzzer Language"/>
+	<meta property="og:description"   content="Can you understand and use a language made up of only two sounds? Play this game from researchers at Abertay University to find out!"/>
+	<title>The Binary Buzzer Language</title>
+	<!-- Styling -->
+	<link href="study/css/normalize.css" rel="stylesheet">
+	<link href="study/css/global.css" rel="stylesheet">
+</head>
+<body>
+	<main>
+		<section id="title">
+			<section id="logos">
+				<img id="abertayLogo" src="study/images/abertay_logo_colour_white_background.png">
+				<img id="carnegieLogo" src="study/images/carnegie_logo.jpg">
+			</section>
+			<hgroup>
+				<h1>The Binary Buzzer Language</h1>
+				<h2>Can you understand and use a language made up of only two sounds?</h2>
+				<div>&#11015;&#11014;</div>
+			</hgroup>
+			<section id="info">
+				<p>Thanks for considering participation in our language learning game! We are really glad you are here!</p>
+				<p>Our research group is trying to understand whether humans can learn a very simple language consisting of only two sounds - a high tone and a low tone.</p>
+				<p>Turns out this is not that easy so to better understand why we are trying to track the learning process of many participants. </p>
+				<p>To do so, it is really important for us that once you start you continue until you reach the learning goal which will be assigned to you. </p>
+				<p>It may take between 15 to 30 min or even a bit more depending on the learning conditions you get in the game.</p>
+				<p>This is not a reflection of your abilities and we are very grateful for your persistence.</p>
+				<p>You can track your scores throughout the game to see how far you are from reaching your assigned goal.</p>
+				<p>Please try to find a quiet place to avoid distractions during the session.</p>
+			</section>	
+			<button onclick="nextButtonPressed()">Give it a try!</button>
+		</section>
+	</main>
+	<script>
+		function nextButtonPressed() {
+			window.location = 'ethics.html' + window.location.search;
+		}
+	</script>
+</body>
+</html>

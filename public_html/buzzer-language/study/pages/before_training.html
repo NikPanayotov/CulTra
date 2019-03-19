@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="robots" content="noindex, nofollow">
+	<title>The Binary Buzzer Language</title>
+	<!-- Styling -->
+	<link href="css/normalize.css" rel="stylesheet">
+	<link href="css/global.css" rel="stylesheet">
+</head>
+<body>
+	<section id="briefing">
+		<h1>The Binary Buzzer Language Game</h1>
+		<form method="post" action="php/post_demographics.php">
+			<label>ID (for Prolific participants only!): <input id="prolific_id" type="text" name="prolific_id"></label>
+				
+			<p><b>Please have your sound switched ON to continue!</b></p>
+			<p>You will first do a few training rounds to familiarise yourself with the language.</p>
+			<p>In the first training task you will hear the two-buzzer words for a few strange objects.</p>
+			<p>Try to work out which object each word refers to.</p>
+			<p>You will then see the correct object and hear the word again.</p>
+			<p>If you get it right, you will earn a point. Get enough points in a round and you will receive a star.</p>
+			<p>When you get two stars your training will be complete.</p>
+			<p>Don't worry if you feel like you can't really work it out right away - learning a language is not a trivial task. If unsure, just use your intuition. This is not a competition.</p>
+			<p><b>It is important that you do not take any notes!</b></p>
+			<p><b>Have fun!</b></p>
+			<input type="submit" value="CONTINUE">
+		</form>
+	</section>
+	<!-- Add JQuery Support -->
+	<script src="javascript/jquery-3.1.1.js"></script>
+	<script>
+		// parse URL variables
+		// https://stackoverflow.com/questions/814613/how-to-read-get-data-from-a-url-using-javascript
+		function parseURLParams(url) {
+			var queryStart = url.indexOf("?") + 1,
+				queryEnd   = url.indexOf("#") + 1 || url.length + 1,
+				query = url.slice(queryStart, queryEnd - 1),
+				pairs = query.replace(/\+/g, " ").split("&"),
+				parms = {}, i, n, v, nv;
+
+			if (query === url || query === "") return;
+
+			for (i = 0; i < pairs.length; i++) {
+				nv = pairs[i].split("=", 2);
+				n = decodeURIComponent(nv[0]);
+				v = decodeURIComponent(nv[1]);
+
+				if (!parms.hasOwnProperty(n)) parms[n] = [];
+				parms[n].push(nv.length === 2 ? v : null);
+			}
+			return parms;
+		}
+		
+		window.onload = function() {
+			// place provided prolific ID in input box 
+			document.getElementById("prolific_id").value = parseURLParams(window.location.href).PROLIFIC_PID[0];
+		}
+	</script>
+</body>
+</html>

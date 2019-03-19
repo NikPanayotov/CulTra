@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta property="og:title" content="The Two Colour Language" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="Can you understand and use a language expressed with only two colours? Play this game from researchers at Abertay University to find out!" />
+	<title>Two Colour Language</title>
+	<!-- Styling -->
+	<link href="study/css/normalize.css" rel="stylesheet">
+	<link href="study/css/global.css" rel="stylesheet">
+</head>
+<body>
+	<main>
+		<section id="title">
+			<section id="logos">
+				<img id="abertayLogo" src="study/images/abertay_logo_colour_white_background.png">
+				<img id="carnegieLogo" src="study/images/carnegie_logo.jpg">
+			</section>
+			<hgroup>
+				<h1>Two Colour Language</h1>
+				<h2>Can you understand and use a language expressed with only two colours?</h2>
+				<div id="gameLogo"><span style="color: hsl(40, 100%, 50%)">&#9679;</span><span style="color: hsl(220, 100%, 50%)">&#9679;</span></div>
+			</hgroup>
+			<section id="info">
+				<p>Scientists are trying to understand whether humans could communicate using only two colour signals.</p>
+				<p>See how well you can understand and use such a language! It may take between 15 and 30 min or even a bit more depending on the learning conditions you get in the game.</p>
+				<p>This is not a reflection of your abilities and we are very grateful for your persistence.</p>
+				<p>Please try to find a quiet place to avoid distractions during that time.</p>
+				<p>Thank you for helping our research!</p>			
+			</section>	
+			<button onclick="nextButtonPressed()">Give it a try!</button>
+		</section>
+	</main>
+	<script>
+		function nextButtonPressed() {
+			window.location = 'ethics.html' + window.location.search;
+		}
+	</script>
+</body>
+</html>

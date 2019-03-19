@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="robots" content="noindex, nofollow">
+	<title>Tree Visualisation</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css?family=Roboto');
+	
+		body {
+			font-family: 'Roboto', sans-serif;
+			margin: 0;
+		}
+		
+		*.unselectable {
+			-moz-user-select: -moz-none;
+			-khtml-user-select: none;
+			-webkit-user-select: none;
+
+			/*
+			 Introduced in IE 10.
+			 See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+			*/
+			-ms-user-select: none;
+			user-select: none;
+			
+			cursor: default;
+		}
+	
+		.yAxis path,
+		.yAxis line,
+		.xAxis path,
+		.xAxis line {
+			fill: none;
+			stroke: black;
+			shape-rendering: crispEdges;
+			pointer-events: none;
+		}
+		
+		.yAxis text,
+		.xAxis text {
+			font-family: sans-serif;
+			font-size: 1em;
+			pointer-events: none;
+		}
+		
+		.nodeLabel {
+			font-size: 1em;
+			pointer-events: none;
+		}
+		
+		#mainSVG {
+			min-height: 540px;
+			vertical-align: top;
+			background-color: white;
+		}
+		
+		#aside {
+			min-height: 540px;
+			position: absolute;
+			display: inline-block;
+			min-width: 400px;
+			height: 650px;
+			padding: 0;
+			background-color: #dfd;
+		}
+
+		#aside #wrapper {
+			padding: 2em 0 2em 2em;
+		}
+		
+		#aside label {
+			width: 12em;
+			display: inline-block;
+		}
+		
+		#aside input[type=number] {
+			display: inline-block;
+			margin: 0.3em;
+			width: 4em;
+			padding: 0.5em;
+			text-align: center;
+			background-color: #efe;
+			border: none;
+			border-radius: 0.5em;
+		}
+		
+		#aside input[type=radio] {
+			margin-bottom: 1em;
+		}
+		
+		#aside button {
+			margin: 1em;
+			padding: 0.5em;
+			background-color: #aea;
+			border: none;
+			border-radius: 0.5em;
+		}
+		
+		#aside button:hover {
+			background-color: #6e6;
+			border-radius: 0.5em;
+		}
+		
+		#aside img {
+			width: 4em;
+			vertical-align: middle;
+		}
+		
+		#aside #nodeInfo {
+			display: inline-block;
+			vertical-align: middle;
+		}
+		
+		#aside #graphButton {
+			vertical-align: middle;
+			margin: 0 0 0 1em;
+		}
+		
+		#dataBox {
+			overflow: auto;
+			max-width: 680px;
+		}
+	</style>
+</head>
+<body>
+	<svg id="mainSVG"></svg>
+	<section id="aside">
+		<section id="wrapper">
+			<div id="topAside">
+				<label><input type="radio" name="nodeText" onclick="addEditDistance()">Testing Edit Distance</label>
+				<label><input type="radio" name="nodeText" onclick="addNumberOfTrials()">Number of Trials</label>
+				<label><input type="radio" name="nodeText" onclick="addTime()">Time in Minutes</label>
+				<br>
+				<label>Nodes: <input id="nodesCount" type="number" disabled></input></label>
+				<label>Terminal: <input id="terminalCount" type="number" disabled></input></label>
+				<label>Nonterminal: <input id="nonterminalCount" type="number" disabled></input></label>
+				<h3>Node Info:</h3>
+				<div>
+					<span id="nodeInfo"></span>
+					<button id="graphButton" onclick="updateLineGraph();" hidden>See NED Graph</button>
+				</div>
+				<svg id="svgED" width="400" height="200"></svg>
+			</div>
+			<div id="dataBox" type="text"></div>
+		</section>
+	</section>
+	<script src="d3/d3.min.js"></script>
+	<script src="jquery-3.1.1.js"></script>
+	<script>
+		// GLOBAL EVENTS AND PROPERTIES
+		var hold = false;
+		d3.select("body").on("mouseup", function(d) { hold = false; });
+		var currentNode = 0;
+		
+		// CREATE MAIN SVG
+		var w = window.innerWidth/2 > 600 ? window.innerWidth/2 : 600;
+		var h = (window.innerHeight - 20) > 540 ? (window.innerHeight - 20) : 540;
+		var padding = 50;
+		
+		var svg = d3.select("#mainSVG").attr("width", w).attr("height", h);
+
+		svg.append("g").attr("class", "xAxis");
+		svg.append("g").attr("class", "yAxis");
+		svg.append("g").attr("class", "edges");
+		svg.append("g").attr("class", "nodes");
+		
+		// DATA
+		var xScale, yScale, xAxis, yAxis;
+		var dataset = [];
+		initialiseData();
+		
+		$("#aside").width(window.innerWidth - w).height(h + 20);
+		$("#dataBox").css("max-height", h - 100 - Number(document.getElementById("topAside").clientHeight));
+		
+		
+		window.onresize = function() {	
+			w = window.innerWidth/2 > 600 ? window.innerWidth/2 : 600;
+			h = (window.innerHeight - 20) > 540 ? (window.innerHeight - 20) : 540;
+
+			$("#aside").width(window.innerWidth - w).height(h + 20);
+			$("#dataBox").css("max-height", h - 100 - Number(document.getElementById("topAside").clientHeight));
+			
+			svg = d3.select("#mainSVG").attr("width", w).attr("height", h);
+			buildTree();
+		}
+		
+		function initialiseData() {		
+			$.get("php/get_nodes.php" , function(json) { 
+				//console.log(json);
+				dataset = JSON.parse(json);
+
+				// remove bad nodes
+				for (var i = 0; i < dataset.length; i++) {
+					if ((dataset[i].type !== "terminal") && (dataset[i].type !== "nonterminal") && (dataset[i].type !== "endbranch")) {
+						dataset.splice(i,1);
+						i--;
+					}
+				}
+				
+				var root = 10000000;
+				// include x values
+				for (var i = 0; i < dataset.length; i++) {
+					if (dataset[i].generation === 1) {
+						dataset[i].x = (i+1)*root;
+						root++;
+					} else {
+						if (typeof getNodeByKey(dataset[i].parent).children !== 'object') {
+							getNodeByKey(dataset[i].parent).children = [dataset[i].node_id];
+							dataset[i].x = getNodeByKey(dataset[i].parent).x;
+						} else {
+							dataset[i].x = getNodeByKey(dataset[i].parent).x + (getNodeByKey(dataset[i].parent).children.length*(root/(dataset[i].generation/4)));//(Math.pow(3, dataset[i].generation))));
+							getNodeByKey(dataset[i].parent).children.push(dataset[i].node_id);
+						}
+					
+						//var x = getNodeByKey(dataset[i].parent).x + (0.5 - Math.random())/2;
+						//dataset[i].x = x > 0 ? x : 0.05;
+					}
+				}
+				
+				
+				// SCALES		
+				xScale = d3.scaleLinear()
+								.domain([0, d3.max(dataset, function(d) { return d.x; })])
+								.range([padding, w - padding]);
+				/*
+				xScale = d3.scaleLinear()
+								.domain([0, 1])
+								.range([padding, w - padding]);
+				*/
+				yScale = d3.scaleLinear()
+								.domain([1, d3.max(dataset, function(d) { return d.generation; })])
+								.range([h - padding, padding]);
+				
+				// AXIS
+				yAxis = d3.axisLeft(yScale).ticks(d3.max(dataset, function(d) { return d.generation; }));
+				svg.select("g.yAxis")
+					.attr("class", "yAxis")
+					.attr("transform", "translate(" + padding + "," + "0" + ")")
+					.call(yAxis);
+
+				xAxis = d3.axisBottom(xScale);
+				svg.select("g.xAxis")
+					.attr("class", "xAxis")
+					.attr("transform", "translate(" + 0 + "," + (h - padding) + ")")
+					.call(xAxis)
+					.selectAll("text").remove();	// remove ticks text
+				
+				// text label for the x axis
+				svg.append("text")
+					.attr("class", "xAxisLabel")
+					.attr("transform",
+						"translate(" + (w/2) + " ," + 
+						(h - padding/3) + ")")
+					.style("text-anchor", "middle")
+					.text("Chain Seed");
+				
+				
+				// text label for the y axis
+				svg.append("text")
+					.attr("class", "yAxisLabel")
+					.attr("transform", "rotate(-90)")
+					.style("text-anchor", "middle")
+					.text("Generation");   
+				
+				// START
+				buildTree();
+			});
+		}
+
+		function buildTree() {
+			// SCALES		
+			xScale.domain([0, d3.max(dataset, function(d) { return d.x; })])
+						.range([padding, w - padding]);
+			
+
+			yScale.domain([1, d3.max(dataset, function(d) { return d.generation; })])
+						.range([h - padding, padding]);
+
+			// ---EXIT---
+			svg.select("g.nodes").selectAll("g.node").data(dataset).exit().remove();
+			svg.select("g.edges").selectAll("line").data(dataset).exit().remove();
+									
+			// ---ENTER---
+			// NODES
+			svg.select("g.nodes")
+				.selectAll("circle")
+				.data(dataset)
+				.enter()
+				.append("g")
+				.attr("class", "node")
+				.on("mouseover", function() {
+					d3.select(this).select("circle").attr("fill", "gray");
+				})
+				.on("mousedown", function(d) {
+					// clear graph svg
+					d3.selectAll("#svgED > *").remove();
+					d3.select("#svgED").attr("height", "0");
+					$("#dataBox").css("max-height", h - 100 - Number(document.getElementById("topAside").clientHeight));
+					document.getElementById("dataBox").scrollTop = 0;
+					document.getElementById("graphButton").hidden = false;
+	
+					d3.selectAll(".nodes circle").attr("stroke-width", 1);
+					d3.select(this).select("circle").attr("stroke-width", 4);
+					currentNode = d.node_id;
+					var box = document.getElementById("dataBox");
+					document.getElementById("nodeInfo").innerHTML = String(	"Node ID: " + String(d.node_id) + "&emsp;&emsp;" +
+											"Session: " + String(d.sessionId) + "&emsp;&emsp;" + 
+											"Parent: " + String(d.parent) + "<br>" +
+											"Type: " + String(d.type) + "&emsp;&emsp;" +
+											"Status: " + String(d.status) + "<br>");
+					// get transmissions data from database
+					$.get("php/get_node_transmissions.php" , { node_id: d.node_id }, function(json) { 
+						//console.log(json);
+						var data = JSON.parse(json);
+						box.innerHTML = "";
+						var totalEditDistance = 0;
+						for (var i = 0; i < data.length; i++) {
+							box.innerHTML += "Trial " + String(i+1) + ": " + 
+												data[i].section + 
+												" " +
+												String(data[i].item_order) + 
+												" " +
+												"<img src='../study/images/set1/" + String(data[i].object) + ".png'>" +	
+												": Target: <b>" +
+												data[i].target + 
+												"</b> => Input: <b>" +
+												data[i].input + 
+												"</b> => C: " +
+												data[i].correct + 
+												" => ED: " +
+												data[i].edit_distance + 
+												"<br>";
+							if (data[i].section === "TESTING") {
+								totalEditDistance += Number(data[i].edit_distance);
+							}
+						}
+						box.innerHTML += "TOTAL ED: " + String(totalEditDistance/8)+ "<br>";
+					});
+					
+					box.hidden = false;
+				})
+				.on("mouseout", function() { 
+					d3.select(this).select("circle").attr("fill", "white");
+				})
+				.append("circle")
+				.attr("cx", function(d) {
+					return xScale(d.x);
+				})
+				.attr("cy", function(d) { return yScale(d.generation); })
+				.attr("r", 14)
+				.attr("stroke", "black")
+				.attr("fill", function(d) {
+					return "hsl(100,100%,100%)";
+				});
+				/*.on("mousedown", function(d) {
+					d3.event.stopPropagation();
+					d3.event.preventDefault();
+					if (d3.event.button === 1) {
+						// create a new child node
+						insertNode(d.node_id);
+						buildTree();
+					}
+					hold = true;
+				})*/
+				/*.on("mousemove", function(d) {
+					if (hold) {
+						d3.event.stopPropagation();
+						d3.event.preventDefault();
+						d3.selectAll(".nodes circle").attr("stroke-width", 1);
+						var svgBox = document.getElementById("mainSVG").getBoundingClientRect();
+						getNodeByKey(d.node_id).x = (d3.event.clientX - svgBox.left - padding)/(w - 2*padding)*d3.max(dataset, function(d) { return d.x; });
+						buildTree();
+						//d3.select(this).attr("cx", function(d) { return xScale(d.x); });
+					}
+				})*/
+				
+			// EDGES
+			svg.select("g.edges")
+				.selectAll("line")
+				.data(dataset)
+				.enter()
+				.append("line")
+				.attr("x1", function(d) {
+					return xScale(d.x);
+				})
+				.attr("y1", function(d) { return yScale(d.generation); })
+				.attr("x2", function(d) {
+					if (d.parent != 0) 
+						return xScale(getNodeByKey(d.parent).x);
+					else 
+						return xScale(d.x);
+				})
+				.attr("y2", function(d) { 
+					if (d.parent != 0) 
+						return yScale(getNodeByKey(d.parent).generation); 
+					else 
+						return yScale(d.generation);
+				})
+				.attr("stroke", function(d) { return "black" });
+				
+			// AXIS
+			yAxis = d3.axisLeft(yScale).ticks(d3.max(dataset, function(d) { return d.generation; }));
+			svg.select("g.yAxis").call(yAxis);
+
+			svg.select("g.xAxis").attr("transform", "translate(" + 0 + "," + (h - padding) + ")");
+			
+			svg.selectAll(".yAxisLabel")
+					.attr("y", 0 + padding/3)
+					.attr("x",0 - (h / 2));
+			
+			xAxis = d3.axisBottom(xScale);
+			svg.select("g.xAxis").call(xAxis)
+			
+			// text label for the x axis
+			svg.selectAll(".xAxisLabel")             
+				.attr("transform",
+					"translate(" + (w/2) + " ," + 
+					(h - padding/3) + ")");
+			
+			// ---UPDATE---
+			// NODES
+			svg.select("g.nodes")
+				.selectAll("circle")
+				.attr("cx", function(d) {
+					return xScale(d.x);
+				})
+				.attr("cy", function(d) { return yScale(d.generation); });
+				
+			svg.select("g.nodes")
+				.selectAll("text")
+				.attr("x", function(d) {
+					return xScale(d.x);
+				})
+				.attr("y", function(d) { return yScale(d.generation) + 5; });
+				
+			// EDGES
+			svg.select("g.edges")
+				.selectAll("line")
+				.attr("x1", function(d) {
+					return xScale(d.x);
+				})
+				.attr("y1", function(d) { return yScale(d.generation); })
+				.attr("x2", function(d) {
+					if (d.parent != 0) 
+						return xScale(getNodeByKey(d.parent).x);
+					else
+						return xScale(d.x);
+				})
+				.attr("y2", function(d) { 
+					if (d.parent != 0) 
+						return yScale(getNodeByKey(d.parent).generation);
+					else
+						return yScale(d.generation);
+				});
+			
+			// Update Counts
+			reportTree();
+		}
+		
+		function insertNode(node_id) {
+			for (var i = 0; i < dataset.length; i++) {
+				if (dataset[i].parent === node_id) {
+					// has at least one child
+					getNodeByKey(node_id).type = "nonterminal";
+					dataset.push({
+						node_id: d3.max(dataset, function(d) { return d.node_id; } ) + 1, 
+						x: getNodeByKey(node_id).x + (0.5 - Math.random()), 
+						generation: getNodeByKey(node_id).generation + 1,
+						parent: getNodeByKey(node_id).node_id,
+						type: "terminal",
+						sessionId: 0
+					});
+					return;
+				}
+			}
+		
+			// first child
+			getNodeByKey(node_id).type = "nonterminal";
+			dataset.push({
+				node_id: d3.max(dataset, function(d) { return d.node_id; } ) + 1, 
+				x: getNodeByKey(node_id).x, 
+				generation: getNodeByKey(node_id).generation + 1,
+				parent: getNodeByKey(node_id).node_id,
+				type: "terminal",
+				sessionId: 0
+			});	
+		}
+		
+		function reportTree() {
+			var terminal = 0;
+			var nonterminal = 0;
+
+			var s = "";
+			var branchLengths = []
+			
+			for (var i = 0; i < dataset.length; i++) {
+				if (dataset[i].type === "terminal") {
+					terminal++;
+					
+					if (typeof branchLengths[dataset[i].generation] === "undefined") {
+						branchLengths[dataset[i].generation] = 0;
+					}
+					branchLengths[dataset[i].generation] += 1;
+					
+					s += String(	"Node ID: " + String(dataset[i].node_id) + "=>" +
+											"Generation: " + String(dataset[i].generation) + "<br>");
+				} else if (dataset[i].type === "nonterminal") {
+					nonterminal++;
+				}
+			}
+
+			document.getElementById("nodesCount").value = dataset.length;
+			document.getElementById("terminalCount").value = terminal;
+			document.getElementById("nonterminalCount").value = nonterminal;
+		}
+
+		function getNodeByKey(node_id) {
+			for (var i = 0; i < dataset.length; i++) {
+				if (dataset[i].node_id === node_id) {
+					return dataset[i];
+				}
+			}
+		}
+		
+		function addEditDistance() {
+			// clear first
+			svg.select("g.nodes").selectAll("g.node text").remove();
+		
+			var mean = 0;
+			var std = 0;
+			var counter = 0;
+			var points = [];
+		
+			svg.select("g.nodes").selectAll("g.node")
+				.append("text").text(function(d) {
+					var node = this;
+					
+					if (d.node_id > 12) {
+						// get transmissions data from database
+						$.get("php/get_node_transmissions.php" , { node_id: d.node_id }, function(json) { 
+							//console.log(json);
+							var data = JSON.parse(json);
+							
+							var totalEditDistance = 0;
+							for (var i = 0; i < data.length; i++) {
+								if (data[i].section === "TESTING") {
+									totalEditDistance += Number(data[i].edit_distance);
+								}
+							}
+
+							totalEditDistance /= 8;
+
+							d3.select(node).style("text-anchor", "middle").text(Math.round(totalEditDistance*10)/10);
+							
+							// mean, sd and outliers
+							mean += totalEditDistance;
+							points.push(totalEditDistance);
+						
+							
+							counter++;
+							
+							if (counter >= dataset.length - 12) {
+								mean /= dataset.length - 12;
+								// standard deviation
+								for (var i = 0; i < points.length; i++) {
+									std += (points[i] - mean)*(points[i] - mean);
+								}
+								std /= points.length;
+								std = Math.sqrt(std);
+								console.log(mean, std);
+								
+								// which are outliers
+								var low = mean - 2*std;
+								var high = mean + 2*std;
+								
+								svg.select("g.nodes").selectAll("text")
+									.attr("fill", function() {
+										if ((Number(this.innerHTML) > high) || (Number(this.innerHTML) < low)) {
+											$(this).css("font-weight", "bold");
+											return "red";
+										} else {
+											return "black";
+										}
+										});
+							}
+						});
+					}
+				})
+				.attr("class", "nodeLabel unselectable")
+				.attr("unselectable", "on")
+				.attr("x", function(d) { return xScale(d.x);})
+				.attr("y",function(d) { return yScale(d.generation) + 5;});
+		}
+		
+		function addNumberOfTrials() {
+			// clear first
+			svg.select("g.nodes").selectAll("g.node text").remove();
+		
+			var mean = 0;
+			var std = 0;
+			var counter = 0;
+			var points = [];
+		
+			svg.select("g.nodes").selectAll("g.node")
+				.append("text").text(function(d) {
+					var node = this;
+					
+					if (d.node_id > 12) {
+						// get transmissions data from database
+						$.get("php/get_node_transmissions.php" , { node_id: d.node_id }, function(json) { 
+							//console.log(json);
+							var data = JSON.parse(json);
+
+							d3.select(node).style("text-anchor", "middle").text(data.length);
+
+							// mean, sd and outliers
+							mean += data.length;
+							points.push(data.length);
+						
+							
+							counter++;
+							
+							if (counter >= dataset.length - 12) {
+								mean /= dataset.length - 12;
+								// standard deviation
+								for (var i = 0; i < points.length; i++) {
+									std += (points[i] - mean)*(points[i] - mean);
+								}
+								std /= points.length;
+								std = Math.sqrt(std);
+								console.log(mean, std);
+								
+								// which are outliers
+								var low = mean - 2*std;
+								var high = mean + 2*std;
+								
+								svg.select("g.nodes").selectAll("text")
+									.attr("fill", function() {
+										if ((Number(this.innerHTML) > high) || (Number(this.innerHTML) < low)) {
+											$(this).css("font-weight", "bold");
+											return "red";
+										} else {
+											return "black";
+										}
+										});
+							}
+							
+						});
+					}
+				})
+				.attr("class", "nodeLabel unselectable")
+				.attr("unselectable", "on")
+				.attr("x", function(d) { return xScale(d.x);})
+				.attr("y",function(d) { return yScale(d.generation) + 5;});
+		}
+		
+		function addTime() {
+			// clear first
+			svg.select("g.nodes").selectAll("g.node text").remove();
+		
+			var mean = 0;
+			var std = 0;
+			var counter = 0;
+			var points = [];
+		
+			svg.select("g.nodes").selectAll("g.node")
+				.append("text").text(function(d) {
+					var node = this;
+					
+					if (d.node_id > 12) {
+						// get transmissions data from database
+						$.get("php/get_node_transmissions.php" , { node_id: d.node_id }, function(json) { 
+							//console.log(json);
+							var data = JSON.parse(json);
+							
+							var totalMinutes = Math.round((data[data.length-1].timestamp - data[0].timestamp)/60);
+
+							d3.select(node).style("text-anchor", "middle").text(totalMinutes);
+							
+							// mean, sd and outliers
+							mean += totalMinutes;
+							points.push(totalMinutes);
+						
+							
+							counter++;
+							
+							if (counter >= dataset.length - 12) {
+								mean /= dataset.length - 12;
+								// standard deviation
+								for (var i = 0; i < points.length; i++) {
+									std += (points[i] - mean)*(points[i] - mean);
+								}
+								std /= points.length;
+								std = Math.sqrt(std);
+								console.log(mean, std);
+								
+								// which are outliers
+								var low = mean - 2*std;
+								var high = mean + 2*std;
+								
+								svg.select("g.nodes").selectAll("text")
+									.attr("fill", function() {
+										if ((Number(this.innerHTML) > high) || (Number(this.innerHTML) < low)) {
+											$(this).css("font-weight", "bold");
+											return "red";
+										} else {
+											return "black";
+										}
+										});
+							}
+						});
+					}
+				})
+				.attr("class", "nodeLabel unselectable")
+				.attr("unselectable", "on")
+				.attr("x", function(d) { return xScale(d.x);})
+				.attr("y",function(d) { return yScale(d.generation) + 5;});
+		}
+		
+		
+		
+
+		// ---------------------
+		// TRIALS GRAPH
+		// ---------------------
+		// https://bl.ocks.org/mbostock/3883245
+		function updateLineGraph() {
+			d3.select("#svgED").attr("height", "200");
+			document.getElementById("graphButton").hidden = true;
+			$("#dataBox").css("max-height", h - 100 - Number(document.getElementById("topAside").clientHeight));
+			
+			$.get("php/get_node_transmissions.php" , { node_id: currentNode }, function(json) { 
+				//console.log(json);
+				var data = JSON.parse(json);
+			
+				var margin = {top: 20, right: 20, bottom: 30, left: 50},
+					width = 400 - margin.left - margin.right,
+					height = 200 - margin.top - margin.bottom;
+
+				var x = d3.scaleLinear()
+					.range([0, width])
+
+				var y = d3.scaleLinear()
+					.range([height, 0]);
+
+				var xAxis = d3.axisBottom(x);
+
+				var yAxis = d3.axisLeft(y);
+
+				var line = d3.line()
+					.x(function(d, j) { return x(j + 1); })
+					.y(function(d) { 
+						if ((d.section === "COMPREHENSION_TRAINING") || (d.section === "SELF_TESTING")) {
+							return y(Number(d.edit_distance/3)); 
+						} else {
+							return y(Number(d.edit_distance)); 
+						}
+					});
+
+				var svgED = d3.select("#svgED")
+					.attr("width", width + margin.left + margin.right)
+					.attr("height", height + margin.top + margin.bottom)
+				  .append("g")
+					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+				  x.domain(d3.extent(data, function(d, j) { return j + 1; }));
+				  y.domain([0,1]);
+
+				  svgED.append("g")
+					  .attr("class", "x axis")
+					  .attr("transform", "translate(0," + height + ")")
+					  .call(xAxis);
+
+				  svgED.append("g")
+					  .attr("class", "y axis")
+					  .call(yAxis)
+					.append("text")
+					  .attr("transform", "rotate(-90)")
+					  .attr("y", 6)
+					  .attr("dy", ".71em")
+					  .style("text-anchor", "end")
+					  .text("NED");
+
+				  svgED.append("path")
+					  .datum(data)
+					  .attr("class", "line")
+					  .attr("fill", "none")
+					  .attr("stroke", "black")
+					  .attr("stroke-width", "2px")
+					  .attr("d", line);
+			});
+		}
+
+	</script>
+</body>
+</html>

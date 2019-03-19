@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="robots" content="noindex, nofollow">
+	<title>The Binary Buzzer Language</title>
+	<!-- Styling -->
+	<link href="css/normalize.css" rel="stylesheet">
+	<link href="css/global.css" rel="stylesheet">
+</head>
+<body>
+	<section id="briefing">
+		<h1>Great Job!</h1>
+		<p>Now let's see how well you have learned the words.</p>
+		<p>Try to name all the objects using the low and high buzzes as before.</p>
+		<p>Make sure it is possible to figure out from your words what objects you mean.</p>
+		<button id="continueButton" onclick="nextButtonPressed();">CONTINUE</button>
+	</section>
+	<!-- Add JQuery Support -->
+	<script src="javascript/jquery-3.1.1.js"></script>
+	<script>
+		function nextButtonPressed() {
+			$.ajax('php/next_item.php').done(function(data) {
+				window.location.reload();
+			});	
+		}
+	</script>
+</body>
+</html>

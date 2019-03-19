@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+        <meta charset="UTF-8">
+		<meta name="robots" content="noindex, nofollow">
+		<title>Two Colour Language</title>
+		<link href="css/normalize.css" rel="stylesheet">
+		<link href="css/global.css" rel="stylesheet">
+		<style>
+			#score {
+				font-weight: bold;
+			}
+		</style>
+    </head>
+    <body>
+		<section id="briefing">
+			<h1>Thank you for playing the The Two Colour Language game!</h1>
+			<p>We know this wasn't easy, but you did an excellent job learning! Your contribution is greatly valued.</p>
+			<p><span id="score"></span></p>
+			<p><span id="code"></span></p>
+		</section>
+		<script src="javascript/jquery-3.1.1.js"></script>
+		<script>
+			// First Thing
+			window.onload = function () {
+				$.get('php/get_results.php').done(function(data) {
+					document.getElementById("score").innerHTML = data;
+				});
+				$.get('php/get_completion_code.php').done(function(data) {
+					document.getElementById("code").innerHTML = data;
+				});
+			};
+		</script>
+    </body>
+</html>
+
+
+

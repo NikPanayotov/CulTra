@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="robots" content="noindex, nofollow">
+	<title>Two Colour Language</title>
+	<!-- Styling -->
+	<link href="css/normalize.css" rel="stylesheet">
+	<link href="css/global.css" rel="stylesheet">
+</head>
+<body>
+	<section id="briefing">
+		<h1>One last thing...</h1>
+		<p>Before we tell you how well you did, can you please give us some feedback?</p>
+		<form method="post" action="php/post_questionnaire.php">
+			<label>How did you find out about the game? <input type="text" name="outreach" maxlength="30" required="required"></label>				
+			<p>How much did you enjoy playing the game? (1 - not at all; 5 - very much)</p>
+				<label><span>1</span><input type="radio" name="enjoy" value="1" required="required"></label>
+				<label><span>2</span><input type="radio" name="enjoy" value="2" required="required"></label>
+				<label><span>3</span><input type="radio" name="enjoy" value="3" required="required"></label>
+				<label><span>4</span><input type="radio" name="enjoy" value="4" required="required"></label>
+				<label><span>5</span><input type="radio" name="enjoy" value="5" required="required"></label>
+			<p>Please share with us any thoughts you have about the game:</p>
+			<textarea name="comment" rows="10" cols="50" maxlength="500"></textarea>
+			<input type="submit" value="Submit">
+		</form>
+	</section>
+</body>
+</html>

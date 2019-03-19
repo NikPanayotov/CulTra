@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+        <meta charset="UTF-8">
+		<meta name="robots" content="noindex, nofollow">
+        <title>Two Colour Language</title>
+		<link href="css/normalize.css" rel="stylesheet">
+		<link href="css/global.css" rel="stylesheet">
+    </head>
+    <body>
+		<section id="mainSection">
+			<canvas id="mainCanvas"></canvas>
+			
+			<div id="progressInfo">
+				<p>Word: <span id="itemOrder">0</span>/<span id="itemsTotal">0</span></p>
+				<label id="scoreProgressLabel">
+					Score: <span id="itemsCorrect">0</span>/<span id="itemsRequired">0</span>
+					<progress id="scoreProgress" value="0" max="0"></progress>
+				</label>
+				<img id="starOne" src="images/grey_star.png">
+				<img id="starTwo" src="images/grey_star.png">
+			</div>
+			
+			<div id="listenPhase">
+				<p>Press the button to see the word and click on the object you think it refers to.</p>
+				<button id="playButton" onclick="pressedPlayButton();">SHOW WORD</button>
+				<div id="wordField">-</div>
+			</div>
+			
+			<div id="babblePhase" hidden>
+				<p>Please repeat the word using the buttons below.</p>
+				<div id="buttonsContainer">
+				</div>
+			</div>
+			
+			<button id="nextButton" onclick="pressedNextButton();" disabled>NEXT</button>
+			
+			<div id="dialog" hidden>
+				<p id="dialogText"></p>
+			</div>
+
+		</section>
+
+		<script src="javascript/jquery-3.1.1.js"></script>
+		<script src="javascript/comprehension_training.js"></script>
+    </body>
+</html>
+
+
+

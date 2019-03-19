@@ -1,0 +1,370 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+body {
+	text-align: center;
+	margin: 0;
+	background-color: hsl(165, 100%, 40%);
+}
+
+a {
+	color: #777;
+}
+
+a:hover {
+	color: #ccc;
+}
+
+#briefing {
+	font-family: 'Roboto', sans-serif;
+	color: white;
+	margin: 1em auto;
+	width: 60%;
+	text-align: center;
+}
+
+#briefing  p {
+	padding: 0em 3em;
+	border-left: 10px solid white;
+	border-right: 10px solid white;
+}
+
+#title {
+	margin: 1em auto 0 auto;
+	width: 90%;
+	color: white;
+	padding: 0.1em;
+	background-color: hsl(165, 100%, 40%);
+	box-shadow: none;
+}
+
+#title hgroup {
+	margin: 0 auto;
+	width: 95%;
+	/*border-left: 10px solid white;
+	border-right: 10px solid white;*/
+}
+
+#title hgroup div, #gameLogo {
+	font-size: 5em;
+	color: hsl(0, 100%, 100%);
+	text-shadow: 0px 2px 0px rgba(0, 0, 0, 0.5);
+	background-color: white;
+	border-radius: 200px;
+	box-shadow: 0px 3px 0px rgba(0, 0, 0, 0.5);
+	display: inline-block;
+	margin: 0 auto;
+	padding: 0 0.2em 0.1em 0.2em;
+}
+
+#title h1 {
+	font-size: 2em;
+	color: white;
+	letter-spacing: 0.1em;
+	word-spacing: 0.5em;
+	text-shadow: 0px 2px 0px rgba(0, 0, 0, 0.5);
+}
+
+#title h2 {
+	font-size: 1.5em;
+	color: white;
+	letter-spacing: 0.05em;
+	word-spacing: 0.5em;
+	text-shadow: 0px 1px 0px rgba(0, 0, 0, 0.5);
+}
+
+#title #info {
+	font-size: 1.0em;
+	margin: 0.2em auto;
+	width: 95%;
+	background-color: hsl(165, 100%, 40%);
+	box-shadow: none;
+}
+
+#title button {
+	margin: 1.0em auto;
+	font-size: 1.1em;
+	width: 7.5em;
+	/*height: 7.5em;*/
+}
+
+#title button:active {
+	transition: 0.1s;
+}
+
+#logos {
+	background-color: white;
+	width: 100%;
+	border: 2px solid white;
+	border-radius: 100px;
+	box-shadow: 0px 3px 0px rgba(0, 0, 0, 0.5);
+	min-width: 300px;
+}
+
+#logos img {
+	margin: 0 2em;
+	width: 20%;
+	min-width: 200px;
+}
+
+#info  p, #info small {
+	padding: 0em 3em;
+	border-left: 10px solid white;
+	border-right: 10px solid white;
+}
+
+small {
+	display: block;
+	margin-top: 3em;
+}
+
+section {
+	font-family: 'Roboto', sans-serif;
+	color: white;
+	margin: 0.5em auto;
+	/*min-width: 960px;*/
+	padding: 0.2em;
+	text-align: center;
+}
+
+button, input[type=submit] {
+	font-family: 'Roboto', sans-serif;
+	position: relative;
+	font-size: 1.0em;
+	margin: 0.5em;
+	padding: 0.8em;
+	border: none;
+	box-shadow: 0px 4px 0px rgba(0, 0, 0, 0.5);
+	border-radius: 4em;
+	color: black;
+	background-color: white;
+	/*transition: 0.03s;*/
+}
+
+button:hover, input[type=submit]:hover {
+	background-color: #ddd;
+}
+
+button:active, input[type=submit]:active {
+	color: white;
+	background-color: darkgreen;
+	position: relative;
+	box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.5);
+	/*transition: 0.03s;*/
+}
+
+button:disabled, input[type=submit]:disabled {
+	color: #999;
+	background-color: #555;
+}
+
+button:focus, input[type=submit]:focus {
+	outline: none;
+}
+
+#lowButton {
+	color: hsl(40, 100%, 50%);
+	background-color: hsl(40, 100%, 50%);
+}
+
+#highButton {
+	color: hsl(220, 100%, 50%);
+	background-color: hsl(220, 100%, 50%);
+}
+
+input[type=radio] {
+	margin: 1em;
+}
+
+label span {
+	position: relative;
+	top: -1em;
+	left: 1.65em;
+}
+
+textarea {
+	display: block;
+	margin: 0 auto;
+	resize: none;
+}
+
+#senderSection button {
+	font-size: 1.5em;
+	margin: 0.2em 4em;
+}
+
+#senderSection button:nth-child(1) {
+	margin-left: 0;
+}
+
+#senderSection button:nth-child(2) {
+	margin-right: 0;
+}
+
+#mainCanvas {
+	display: block;
+	background-color: white;
+	margin: 0.5em auto;
+	border: 2px solid white;
+	border-radius: 100px;
+	box-shadow: 0px 3px 0px rgba(0, 0, 0, 0.5);
+}
+
+#image {
+	display: block;
+	margin: 0.5em auto 0.8em auto;
+	padding: 0.1em;
+	background-color: white;
+	border: 2px solid white;
+	border-radius: 40px;
+	box-shadow: 0px 3px 0px rgba(0, 0, 0, 0.5);
+}
+
+#babblePhase button {
+	margin: 0 4em;
+	font-size: 1.5em;
+}
+
+#dialog {
+	color: black;
+	font-weight: bold;
+	z-index: 1;
+	position: absolute;
+	margin: 0;
+	left: 50%;
+	top: 40%;
+	transform: translate(-50%, -50%);
+	background-color: #ddd;
+	border-radius: 100px;
+	padding: 2em;
+}
+
+@media (orientation: portrait) {
+	body {
+		font-size: 1.4em;
+	}
+}
+
+@media (orientation: landscape) {
+	body {
+		font-size: 1.0em;
+	}
+}
+
+#progressInfo p {
+	margin: 0.4em;
+}
+
+#listenPhase p {
+	margin: 0.4em;
+}
+
+#playButton {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+#wordField {
+	display: inline-block;
+	min-width: 10em;
+	text-align: left;
+	line-height: 0.75em;
+	height: 0.85em;
+	font-size: 4.0em;
+	padding: 0;
+	padding-left: 0.1em;
+	margin: 0.325em;
+	background-color: white;
+	border-radius: 100px;
+	box-shadow: 0px 3px 0px rgba(0, 0, 0, 0.5);
+	vertical-align: middle;
+}
+
+/*							*/
+/* Progress Bar Style		*/
+/* Determinate				*/
+#scoreProgress {
+	text-align: left;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	margin-bottom: 0;
+}
+
+#scoreProgress {
+	display: none;
+	/*display: inline-block;*/
+	margin: 0.1em;
+	width: 80%;
+}
+
+#scoreProgressLabel {
+	display: inline-block;
+	/*width: 50%;*/
+	vertical-align: middle;
+}
+
+#scoreProgressLabel span {
+	top: 0;
+	left: 0;
+}
+
+#progressInfo img {
+	width: 2%;
+	vertical-align: middle;
+}
+
+#progressBeforeTask img {
+	width: 10%;
+}
+
+/* TODO: progress text fallback*/
+progress span {
+	
+}
+
+progress
+{
+	/* turns off styling - not usually needed, but good to know. */
+	appearance: none;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+
+	/* gets rid of default border in firefox and opera. */ 
+	border: none;
+
+	/* needs to be in here for safari polyfill so background images work as expected. */
+	background-size: auto;
+
+	/* dimensions */
+	height: 0.5em;
+	
+	/* progress bar IE10 */
+	color: #1c1;
+}
+
+/* Progress Bar Chrome */
+progress::-webkit-progress-bar {
+	background-color: #eee;
+	border-radius: 16px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+progress::-webkit-progress-value {
+	background-color: #1c1;
+	box-shadow: 0 0 19px rgba(0, 0, 0, 0.25) inset;
+	border-radius: 16px; 
+}
+
+/* Progress Bar Firefox */
+progress::-moz-progress-bar { 
+	/* progress bar value firefox */
+	background: #1c1;
+	box-shadow: 0 0 19px rgba(0, 0, 0, 0.25) inset;
+	border-radius: 16px; 	
+}
+
+progress {
+	/* progress bar firefox */
+	background-color: #eee;
+	border-radius: 16px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
